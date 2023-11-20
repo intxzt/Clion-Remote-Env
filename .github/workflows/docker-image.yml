@@ -1,0 +1,45 @@
+name: Docker Image CI
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      kernel:
+        description: "Select the source kernel"
+        required: true
+        default: "alpine"
+        type: choice
+        options:
+          - alpine
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          file: ./Dockerfile-${{ inputs.kernel }}
+          push: true
+          platforms: |
+            linux/386
+            linux/amd64
+            linux/arm/v6
+            linux/arm/v7
+            linux/arm64/v8
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/remote-${{ inputs.kernel }}:latest
