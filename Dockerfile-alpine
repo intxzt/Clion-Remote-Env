@@ -24,5 +24,7 @@ RUN ( \
 	echo 'Subsystem sftp /usr/lib/ssh/sftp-server'; \
   ) > /etc/sshd_config_test_clion
 
+RUN /usr/bin/ssh-keygen -A
+
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D", "-f", "/etc/sshd_config_test_clion"]
