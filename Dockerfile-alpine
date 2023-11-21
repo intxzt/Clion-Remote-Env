@@ -13,8 +13,11 @@
 
 FROM alpine:latest
 
-RUN apk add --update openssh gcc g++ clang gdb cmake make ninja autoconf automake dos2unix tar rsync python3 \
-  && rm  -rf /tmp/* /var/cache/apk/*
+RUN apk add --update openssh gcc g++ clang gdb cmake make ninja autoconf automake dos2unix tar rsync python3 py3-pip \
+  && rm  -rf /tmp/* /var/cache/apk/* \
+  && pip install requests \
+  && pip install urllib3==1.26.6 \
+  && pip install chardet
 
 RUN echo "root:root" | chpasswd
 
