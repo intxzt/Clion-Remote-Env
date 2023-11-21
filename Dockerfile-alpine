@@ -13,7 +13,7 @@
 
 FROM alpine:latest
 
-RUN apk add --update openssh gcc g++ clang gdb cmake make ninja autoconf automake dos2unix tar rsync python3 py3-pip \
+RUN apk add --update openssh gcc g++ clang gdb cmake make ninja autoconf automake dos2unix gawk tar rsync python3 py3-pip \
   && rm  -rf /tmp/* /var/cache/apk/* \
   && pip install requests \
   && pip install urllib3==1.26.6 \
