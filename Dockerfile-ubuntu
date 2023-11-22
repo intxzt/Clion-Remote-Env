@@ -1,0 +1,63 @@
+# CLion remote docker environment (How to build docker container, run and stop it)
+#
+# Build and run:
+#   docker build -t clion/remote-cpp-env:0.5 -f Dockerfile.remote-cpp-env .
+#   docker run -d --cap-add sys_ptrace -p 127.0.0.1:2222:22 --name clion_remote_env clion/remote-cpp-env:0.5
+#   ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:2222"
+#
+# stop:
+#   docker stop clion_remote_env
+# 
+# ssh credentials (test user):
+#   user@password 
+
+FROM ubuntu:latest
+
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
+
+RUN apt update \
+  && apt install -y ssh \
+      build-essential \
+      gcc \
+      g++ \
+      gdb \
+      clang \
+      make \
+      ninja-build \
+      cmake \
+      autoconf \
+      automake \
+      locales \
+      locales-all \
+      dos2unix \
+      rsync \
+      git \
+      tar \
+      unzip \
+      vim \
+      gawk \
+      python3 \
+      python3-pip \
+  && apt clean
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+RUN pip install requests \
+  && pip install urllib3==1.26.6 \
+  && pip install chardet
+
+RUN echo "root:root" | chpasswd 
+
+RUN ( \
+    echo 'LogLevel DEBUG2'; \
+    echo 'PermitRootLogin yes'; \
+    echo 'PasswordAuthentication yes'; \
+    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
+  ) > /etc/ssh/sshd_config_test_clion \
+  && mkdir /run/sshd
+
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]

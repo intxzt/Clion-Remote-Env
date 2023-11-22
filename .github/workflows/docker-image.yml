@@ -11,6 +11,7 @@ on:
         type: choice
         options:
           - alpine
+          - ubuntu
 
 jobs:
   build:
@@ -37,9 +38,7 @@ jobs:
           file: ./Dockerfile-${{ inputs.kernel }}
           push: true
           platforms: |
-            linux/386
             linux/amd64
-            linux/arm/v6
             linux/arm/v7
             linux/arm64/v8
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/remote-${{ inputs.kernel }}:latest
